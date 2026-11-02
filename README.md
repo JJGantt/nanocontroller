@@ -40,7 +40,7 @@ get_token(
 from nanocontroller import NanoController
 
 nano = NanoController(
-    auth_token="sdg7648t24ih"  # Obtained from "get_token"
+    auth_token="<your token>",  # Obtained from "get_token"
     ip_address="172.20.7.17",  # Found on the back of the device, in the app, or via a network scan.
     port="16021",              # Default port is 16021. Discovery recommended.
     latitude=28.5383,          # Optional latitude, required for weather functions.
