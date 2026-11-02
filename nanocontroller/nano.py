@@ -10,13 +10,7 @@ from .helpers.openmeteo import openmeteo
 from .helpers.weather_codes import weather_codes
 import pandas as pd
 from datetime import datetime
-from .helpers.colors import *
-
-load_dotenv()
-
-nanoleaf_config = {
-    key: value for key, value in os.environ.items() if key.startswith("NANO_")
-}
+from .helpers.colors import BLUE, WHITE, YELLOW
 
 @dataclass
 class NanoState:
@@ -81,9 +75,13 @@ class NanoController:
             latitude: float = None, 
             longitude: float = None
     ) -> None:
-        self.auth_token = auth_token or nanoleaf_config.get("NANO_AUTH_TOKEN") 
-        self.ip_address = ip_address or nanoleaf_config.get("NANO_IP_ADDRESS")
-        self.port =  port or nanoleaf_config.get("NANO_PORT") or "16021"
+        # The .env file is read here rather than at import, so importing the
+        # package leaves the caller's environment alone. Variables already set
+        # in the environment win over the file.
+        load_dotenv()
+        self.auth_token = auth_token or os.environ.get("NANO_AUTH_TOKEN")
+        self.ip_address = ip_address or os.environ.get("NANO_IP_ADDRESS")
+        self.port = port or os.environ.get("NANO_PORT") or "16021"
         self.api = NanoAPI(
             auth_token=self.auth_token, 
             ip_address=self.ip_address, 
@@ -96,8 +94,8 @@ class NanoController:
         self.color_dict = {i: [(0, 0, 0, 1)] for i in range(len(self.panels.list))}
         self.state = NanoState(color_dict=self.color_dict)
 
-        self.latitude = latitude or nanoleaf_config.get("NANO_LATITUDE")
-        self.longitude = longitude or nanoleaf_config.get("NANO_LONGITUDE") 
+        self.latitude = latitude or os.environ.get("NANO_LATITUDE")
+        self.longitude = longitude or os.environ.get("NANO_LONGITUDE")
 
         self.hex_task = None
         self.weather_task = None
@@ -147,8 +145,8 @@ class NanoController:
 
     async def cancel_task(self) -> None:
         if self.hex_task and not self.hex_task.done():
-            self.hex_task.cancel()  
-            self.set_previous_state()
+            self.hex_task.cancel()
+            await self.set_previous_state()
 
     async def set_brightness(self, brightness: int) -> None:
         await self.api.set_brightness(brightness)
@@ -312,8 +310,8 @@ class NanoController:
 
     def cancel_timer(self) -> None:
         if self.timer_task and not self.timer_task.done():
-            self.timer_task.cancel()  
-            self.set_previous_state()
+            self.timer_task.cancel()
+            asyncio.get_running_loop().create_task(self.set_previous_state())
     
     async def get_weather_df(
             self, 
