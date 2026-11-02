@@ -5,3 +5,8 @@ reference/
 **/__pycache__/
 
 
+dist/
+*.egg-info/
+build/
+.cache.sqlite
+.DS_Store

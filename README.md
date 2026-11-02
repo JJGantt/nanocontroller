@@ -59,7 +59,7 @@ NANO_LONGITUDE =
 ```
 and just
 ```python
-from nano import NanoController
+from nanocontroller import NanoController
 
 nano = NanoController()
 ```
