@@ -50,8 +50,8 @@ class Panels:
         sorted_panels = sorted(self.list, key=lambda panel: panel.x, reverse=True)
         return [panel.id for panel in sorted_panels]
     
-    def custom_sort(self, orderded_ids) -> None:
-        self.ordered_ids = [orderded_ids]
+    def custom_sort(self, ordered_ids: list[int]) -> None:
+        self.ordered_ids = list(ordered_ids)
 
 class Frame:
     def __init__(
